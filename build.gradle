@@ -4,15 +4,14 @@ plugins {
 	id 'java-library'
 	id 'maven-publish'
 	id 'net.minecraftforge.gradle' version "${forge_gradle_version}"
-	id 'org.spongepowered.mixin' version "${mixin_gradle_version}"
 	id 'org.parchmentmc.librarian.forgegradle' version "${parchent_librarian_version}.+"
 }
 
 libsDirName = "../output"
 distsDirName = "../output"
 
-group = electrodynamics_group
-version = "${minecraft_version}-" + electrodynamics_version
+group = voltaic_group
+version = "${minecraft_version}-" + voltaic_version
 
 repositories {
     mavenLocal()
@@ -20,7 +19,7 @@ repositories {
 
 base {
 
-	archivesName = electrodynamics_name
+	archivesName = voltaic_name
 
 }
 
@@ -36,16 +35,12 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
-            arg "-mixin.config=electrodynamics.mixins.json"
-
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             property 'forge.logging.console.level', 'debug'
 
-			property 'mixin.debug.export', 'true'
-
             mods {
-                electrodynamics {
+                voltaic {
                     source sourceSets.main
                 }
             }
@@ -54,18 +49,14 @@ minecraft {
         server {
             workingDirectory project.file('run')
 
-            arg "-mixin.config=electrodynamics.mixins.json"
-
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-			
-			property 'mixin.debug.export', 'true'
             
             mods {
-                electrodynamics {
+                voltaic {
                     source sourceSets.main
                 }
             }
@@ -74,26 +65,21 @@ minecraft {
         data {
             workingDirectory project.file('run')
 
-            arg "-mixin.config=electrodynamics.mixins.json"
-
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'electrodynamics', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'voltaic', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                electrodynamics {
+                voltaic {
                     source sourceSets.main
                 }
             }
         }
     }
-}
-mixin {
-    add sourceSets.main, "electrodynamics.refmap.json"
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
@@ -104,14 +90,9 @@ configurations {
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	
-    implementation "voltaic:Voltaic:1.20.1-1.0.2-0:deobf"
-    
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-	
-    annotationProcessor "org.spongepowered:mixin:${mixin_annotationprocessor_version}:processor"
 }
 
 
@@ -119,14 +100,13 @@ tasks.named('jar', Jar).configure {
 	
 	manifest {
         attributes([
-            "Specification-Title": "electrodynamics",
+            "Specification-Title": "voltaic",
             "Specification-Vendor": "aurilisdev",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
             "Implementation-Version": project.jar.archiveVersion,
             "Implementation-Vendor" :"aurilisdev",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "electrodynamics.mixins.json"
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 
@@ -162,15 +142,14 @@ publishing {
         }
     }
     repositories {
-           maven {
+        maven {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
+    }
 }
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
-
 idea {
     module {
         downloadSources = true
